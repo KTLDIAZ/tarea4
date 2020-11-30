@@ -4,21 +4,17 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param,
-
-
-  patch, post,
-
-
-
-
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
   put,
-
-  requestBody
+  requestBody,
 } from '@loopback/rest';
 import {Turnos} from '../models';
 import {TurnosRepository} from '../repositories';
@@ -27,7 +23,7 @@ export class TurnosController {
   constructor(
     @repository(TurnosRepository)
     public turnosRepository: TurnosRepository,
-  ) { }
+  ) {}
 
   @post('/turnos', {
     responses: {
@@ -61,9 +57,7 @@ export class TurnosController {
       },
     },
   })
-  async count(
-    @param.where(Turnos) where?: Where<Turnos>,
-  ): Promise<Count> {
+  async count(@param.where(Turnos) where?: Where<Turnos>): Promise<Count> {
     return this.turnosRepository.count(where);
   }
 
@@ -82,9 +76,7 @@ export class TurnosController {
       },
     },
   })
-  async find(
-    @param.filter(Turnos) filter?: Filter<Turnos>,
-  ): Promise<Turnos[]> {
+  async find(@param.filter(Turnos) filter?: Filter<Turnos>): Promise<Turnos[]> {
     return this.turnosRepository.find(filter);
   }
 
@@ -124,7 +116,8 @@ export class TurnosController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Turnos, {exclude: 'where'}) filter?: FilterExcludingWhere<Turnos>
+    @param.filter(Turnos, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Turnos>,
   ): Promise<Turnos> {
     return this.turnosRepository.findById(id, filter);
   }
@@ -179,14 +172,26 @@ export class TurnosController {
 
   @get('/turnos/cumplimiento/{orden}')
   async cumplimiento(
-    @param.path.number('orden') ordenId: number
+    @param.path.number('orden') ordenId: number,
   ): Promise<any> {
     return await this.getDatos(ordenId);
   }
 
   async getDatos(parametro: number) {
-    return await this.turnosRepository
-      .dataSource
-      .execute(`EXEC pro.spCumplimientoTurnos ${parametro}`);
+    return await this.turnosRepository.dataSource.execute(
+      `EXEC pro.spCumplimientoTurnos ${parametro}`,
+    );
+  }
+
+  @get('/turnos/vista1')
+  async vista1(): Promise<any> {
+    let datos: any[] = await this.getView();
+    return datos;
+  }
+
+  async getView() {
+    return await this.turnosRepository.dataSource.execute(
+      `SELECT * FROM pro.vProductosMaquina`,
+    );
   }
 }

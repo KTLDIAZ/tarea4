@@ -1,0 +1,23 @@
+USE produccion
+GO
+
+IF EXISTS (
+SELECT *
+  FROM sys.views
+  JOIN sys.schemas
+  ON sys.views.schema_id = sys.schemas.schema_id
+  WHERE sys.schemas.name = N'pro'
+  AND sys.views.name = N'vProductosMaquina'
+)
+
+DROP VIEW pro.vProductosMaquina
+GO
+CREATE VIEW pro.vProductosMaquina
+AS
+  SELECT maquinaId, SUM(cantidadProduccion) as 'Cantidad producida'  FROM pro.turnos
+  INNER JOIN maq.maquinas  on maquinas.id = turnos.maquinaId
+  GROUP BY maquinaId
+GO
+
+SELECT * FROM pro.vProductosMaquina
+GO
